@@ -30,14 +30,14 @@ status_code check_parameters (int argc, char* argv[]) {
 }
 
 status_code flag_xor8 (char* file_name, unsigned int *res) {
-    FILE *input_file = fopen(file_name, "r");
+    FILE *input_file = fopen(file_name, "rb");
     if (input_file == NULL) {
         return not_open_file;
     }
 
     unsigned int sum = 0;
-    char byte;
-    while ((byte = fgetc(input_file)) != EOF) {
+    unsigned char byte;
+    while (fread(&byte, sizeof(unsigned char), 1, input_file) != 0) {
         sum ^= byte;
     }
     *res = sum;
@@ -47,7 +47,7 @@ status_code flag_xor8 (char* file_name, unsigned int *res) {
 }
 
 status_code flag_xor32 (char* file_name, unsigned int *res) {
-    FILE *input_file = fopen(file_name, "r");
+    FILE *input_file = fopen(file_name, "rb");
     if (input_file == NULL) {
         return not_open_file;
     }
@@ -69,7 +69,7 @@ status_code flag_xor32 (char* file_name, unsigned int *res) {
 }
 
 status_code flag_mask (char* file_name, unsigned long *res, char *hex) {
-    FILE *input_file = fopen(file_name, "r");
+    FILE *input_file = fopen(file_name, "rb");
     if (input_file == NULL) {
         return not_open_file;
     }
@@ -79,9 +79,10 @@ status_code flag_mask (char* file_name, unsigned long *res, char *hex) {
         return overflow;
     } 
 
+
     unsigned long value;
     while (fread(&value, sizeof(unsigned long), 1, input_file) == 1) {
-        if (value == mask) {
+        if (value & mask == mask) {
             (*res)++;
         }
     }
