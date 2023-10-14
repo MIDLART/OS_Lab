@@ -17,7 +17,6 @@ status_code check_parameters (int argc, char* argv[]) {
 status_code file_recording (char* file_name, char* str) {
     FILE *input_file = fopen(file_name, "w");
     if (input_file == NULL) {
-        printf("Не удалось открыть файл\n");
         return file_error;
     }
     size_t len = strlen(str);
@@ -40,6 +39,7 @@ int main (int argc, char *argv[]) {
 
     char str[] = "31415926535";
     if (file_recording(argv[1], str) != ok) {
+        printf("Не удалось открыть файл\n");
         return file_error;
     }
  
