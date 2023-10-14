@@ -15,7 +15,7 @@ status_code check_parameters (int argc, char* argv[]) {
 }
 
 status_code file_recording (char* file_name, char* str) {
-    FILE *input_file = fopen(file_name, "w");
+    FILE *input_file = fopen(file_name, "wb");
     if (input_file == NULL) {
         return file_error;
     }
@@ -37,13 +37,13 @@ int main (int argc, char *argv[]) {
         return invalid_arguments;
     }
 
-    char str[] = "31415926535";
+    unsigned char str[11] = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5};
     if (file_recording(argv[1], str) != ok) {
         printf("Не удалось открыть файл\n");
         return file_error;
     }
  
-    FILE *input_file = fopen(argv[1], "r");
+    FILE *input_file = fopen(argv[1], "rb");
     if (input_file == NULL) {
         printf("Не удалось открыть файл\n");
         return file_error;
@@ -51,11 +51,15 @@ int main (int argc, char *argv[]) {
 
     char character;
     while (fread(&character, sizeof(char), 1, input_file)) {
-        printf("%x\t%p\n", character, input_file);
+        printf("%x\t", character);
+        printf("%c %d %d %d %d %d %c %c\n", input_file->_base, input_file->_bufsiz,
+                input_file->_charbuf, input_file->_cnt, input_file->_file, 
+                input_file->_flag, input_file->_ptr, input_file->_tmpfname);
+
     }
     fclose(input_file);
 
-    input_file = fopen(argv[1], "r");
+    input_file = fopen(argv[1], "rb");
     if (input_file == NULL) {
         printf("Не удалось открыть файл\n");
         return file_error;
@@ -70,7 +74,7 @@ int main (int argc, char *argv[]) {
     }
 
     for (int i = 0; i < 4; i++) {
-        printf("%x ", buf[i]);
+        printf("%u ", buf[i]);
     }
     
     fclose(input_file);
