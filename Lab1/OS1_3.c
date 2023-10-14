@@ -15,18 +15,18 @@ status_code check_parameters (int argc, char* argv[]) {
 }
 
 status_code copy_file (char input[], char output[]) {
-    FILE *input_file = fopen(input, "r");
+    FILE *input_file = fopen(input, "rb");
     if(input_file == NULL) {
         return not_open_file;
     }
-    FILE *output_file = fopen(output, "w");
+    FILE *output_file = fopen(output, "wb");
     if(input_file == NULL) {
         fclose(input_file);
         return not_open_file;
     }
     
-    char character;
-    while ((character = fgetc(input_file)) != EOF) {
+    unsigned char character;
+    while (fread(&character, sizeof(unsigned char), 1, input_file) != 0) {
         fputc(character, output_file);
     }
 
