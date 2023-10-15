@@ -4,7 +4,8 @@
 typedef enum {
     ok,
     invalid_arguments,
-    not_open_file
+    not_open_file,
+    recording_error
 } status_code;
 
 status_code check_parameters (int argc, char* argv[]) {
@@ -27,7 +28,11 @@ status_code copy_file (char input[], char output[]) {
     
     unsigned char character;
     while (fread(&character, sizeof(unsigned char), 1, input_file) != 0) {
-        fputc(character, output_file);
+        if (fwrite(&character, sizeof(unsigned char), 1, output_file) != 1) {
+            fclose(input_file);
+            fclose(output_file);
+            return recording_error;
+        }
     }
 
     fclose(input_file);
@@ -43,8 +48,8 @@ int main (int argc, char* argv[]) {
         return invalid_arguments;
     }
 
-    if (copy_file(argv[1], argv[2]) == not_open_file) {
-        printf("Не удалось открыть файл!\n");
+    if (copy_file(argv[1], argv[2]) != ok) {
+        printf("Ошибка!\n");
         return not_open_file;
     } else {
         printf("Копирование успешно!\n");
