@@ -3,7 +3,9 @@
 #include <sys/types.h>
 
 int main () {
-	pid_t pid, ppid, pgrp, uid, gid, euid, egid;
+	pid_t pid, ppid, pgrp;
+	uid_t uid, euid;
+	uid_t gid, egid;
 	
 	pid = getpid();
 	ppid = getppid();
