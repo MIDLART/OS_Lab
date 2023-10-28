@@ -37,9 +37,10 @@ status_code file_search (FILE* names, char* substr) {
 	FILE* file;
 	char file_name[256] = {0};
 	char c;
-	int i;
+	int i, flag = 0;
+	pid_t pid;
 	
-	while ((c = fgetc(names)) != EOF) {
+	while ((c = fgetc(names)) != EOF && flag == 0) {
 		i = 0;
 		while (c != '\n' && c != '\t' && c != ' ' && c != EOF) {
 			file_name[i] = c;
@@ -49,18 +50,25 @@ status_code file_search (FILE* names, char* substr) {
 		file_name[i] = '\0';
 		
 		if (i != 0) {
-			if ((file = fopen(file_name, "r")) != NULL) {
-				if (substr_search(substr, &file) == no) {
-					printf("No occurrences\n");
-				} else {
-					printf("%s\n", file_name);
-				}
+			pid = fork();
+			if (pid == 0) {
+				if ((file = fopen(file_name, "r")) != NULL) {
+					if (substr_search(substr, &file) == no) {
+						printf("No occurrences\n");
+					} else {
+						printf("%s\n", file_name);
+					}
 
-				fclose(file);
-				
-			} else {
-				printf("Not open file\n");
-			}
+					fclose(file);
+					
+				} else {
+					printf("Not open file\n");
+				}
+				flag = 1;
+				break;
+			}  else if (pid == -1) {
+				printf("pid error\n");
+			} 
 		}
 	}
 
@@ -73,23 +81,14 @@ int main (int argc, char* argv[]) {
 		return invalid_arguments;
 	}
 	
-	pid_t pid;
-	pid = fork();
-	
 	FILE* file_of_names = fopen(argv[2], "r");
 	if (file_of_names == NULL) {
 		printf("Not open file of names\n");
 		return not_open_file;
 	}
 	
-
-	if (pid == 0) {
-		file_search(file_of_names, argv[1]);
-	} else if (pid == -1) {
-		printf("pid error\n");
-	} 
+	file_search(file_of_names, argv[1]);
 	
 	fclose(file_of_names);
 	return ok;
 }
-
