@@ -48,6 +48,7 @@ int conversion_to_int(char* argv) {
 
 void woman_wants_to_enter (int num) {
 	pthread_mutex_lock(&mutex);
+	printf("Woman wants to enter\n");
 	while (in_bathroom == num || by == Man) {
 		pthread_cond_wait(&woman_cond, &mutex);
 	}
@@ -58,6 +59,7 @@ void woman_wants_to_enter (int num) {
 }
 
 void man_wants_to_enter (int num) {
+	printf("Man wants to enter\n");
 	pthread_mutex_lock(&mutex);
 	while (in_bathroom == num || by == Woman) {
 		pthread_cond_wait(&man_cond, &mutex);
