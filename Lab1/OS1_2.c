@@ -131,7 +131,7 @@ status_code howmuch (char* str_time, char* flag) {
             return invalid_arguments;
         }
     } else {
-        if (day > months[mon]) {
+        if (day > months[mon - 1]) {
             return invalid_arguments;
         }
     }
@@ -172,7 +172,7 @@ status_code howmuch (char* str_time, char* flag) {
 
 void sanctions (char* log, int lim, List *list) {
     if (lim < 1 || lim > INT_MAX) {
-         printf("Неверный limit\n");
+        printf("Неверный limit\n");
         return;
     }
     User *t_user = list -> head;
@@ -211,30 +211,38 @@ void app (List *list, int limit) {
         } else if (strcmp(buf, "Date") == 0) {
             date();
         } else if (strcmp(buf, "Howmuch") == 0) {
-            scanf("%s", buf2);
-            scanf("%s", buf3);
+            scanf("%s %s", buf2, buf3);
             if (buf2[10] != '\0' || buf3[2] != '\0') {
                 printf("Ошибка!\n");
             } else {
-                howmuch(buf2, buf3);
+                if (howmuch(buf2, buf3) != ok) {
+                    printf("Неверный ввод аргументов Howmuch\n");
+                }
             }
         } else if (strcmp(buf, "Sanctions") == 0) {
-            buf[6] = '\0';
+            buf2[6] = '\0';
             scanf("%s", buf2);
             getchar();
-            if (scanf("%d", &lim)) {
-                printf("Ошибка!\n");
+            if (scanf("%d", &lim) != 1) {
+                printf("Ошибка!!\n");
             }
             if (buf2[6] != '\0') {
-                printf("Ошибка!\n");
+                printf("Ошибка!!!\n");
             }
             sanctions(buf2, lim, list);
+
+            printf("Лимит установлен\n");
         } else {
             printf("Нет такой команды\n");
         }
 
         limit--;
     }
+
+    if (no_lim == 0 && limit == 0) {
+        printf("Лимит исчерпан\n");
+    }
+
     return;
 }
 
@@ -243,6 +251,7 @@ int main () {
     char flag;
     int exit = 0, pin;
     char login[7];
+    int flag_inv = 1;
 
     List *list = (List*)malloc(sizeof(List));
     if (list){
@@ -258,6 +267,8 @@ int main () {
         scanf("%c", &flag);
         switch (flag) {
         case 'r': {
+            flag_inv = 1;
+
             printf("Введите login длинной до 6 символов\n");
             scanf("%s", &login);
             if (login[6] != '\0') {
@@ -285,6 +296,8 @@ int main () {
         }
 
         case 'l':
+            flag_inv = 1;
+
             printf("Введите login\n");
             scanf("%s", &login);
             if (login[6] != '\0') {
@@ -322,7 +335,10 @@ int main () {
             break;
         
         default:
-            printf("Неверный ввод!!!!");
+            if (flag_inv) {
+                printf("Неверный ввод!!!!\n");
+            }
+            flag_inv = 0;
             break;
         }
     }
