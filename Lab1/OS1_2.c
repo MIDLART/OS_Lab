@@ -179,6 +179,7 @@ void sanctions (char* log, int lim, List *list) {
     while (t_user != NULL) {
         if (strcmp(t_user -> login, log) == 0) {
             t_user -> limitation = lim;
+            printf("Лимит установлен\n");
             return;
         }
         t_user = t_user -> next_user;
@@ -230,8 +231,6 @@ void app (List *list, int limit) {
                 printf("Ошибка!!!\n");
             }
             sanctions(buf2, lim, list);
-
-            printf("Лимит установлен\n");
         } else {
             printf("Нет такой команды\n");
         }
